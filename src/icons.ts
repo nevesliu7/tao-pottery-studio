@@ -1,0 +1,22 @@
+const paths: Record<string,string> = {
+  signature:'<path d="m15 3 5 5-10 10-6 2 2-6L17 3M4 23h16M6 14l4 4"/>',
+  photo:'<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/>',
+  pot:'<path d="M8 5h8c-3 5 5 7 4 13-.8 4-15.2 4-16 0C3 12 11 10 8 5Z"/><ellipse cx="12" cy="5" rx="4" ry="1.5"/>',
+  hand:'<path d="M8 12V6a1.5 1.5 0 0 1 3 0v5-7a1.5 1.5 0 0 1 3 0v7-6a1.5 1.5 0 0 1 3 0v7-3a1.5 1.5 0 0 1 3 0v7c0 4-2 6-6 6h-1c-3 0-4-1-6-4l-3-4a1.5 1.5 0 0 1 2-2l3 3"/>',
+  brush:'<path d="m14 5 5-3 3 3-10 10-3-3 5-7Z"/><path d="M11 14c-4-3-6 2-6 4s-3 3-3 3c6 1 10-1 9-7Z"/>',
+  camera:'<rect x="3" y="5" width="13" height="14" rx="3"/><path d="m16 9 5-3v12l-5-3"/>',
+  pause:'<path d="M9 5v14M15 5v14"/>',
+  play:'<path d="m8 4 12 8-12 8Z"/>',
+  undo:'<path d="m8 4-5 5 5 5M3 9h10a7 7 0 0 1 0 14"/>',
+  reset:'<path d="M3 10a9 9 0 1 1 2 8M3 4v6h6"/>',
+  save:'<path d="M12 3v12m-5-5 5 5 5-5M4 15v5h16v-5"/>',
+  help:'<circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 1 1 4 3c-1 .5-1 1-1 2m0 3h.01"/>',
+  close:'<path d="m6 6 12 12M6 18 18 6"/>',
+  check:'<path d="m5 12 4 4L19 6"/>',
+  lock:'<rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/>',
+  expand:'<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/>',
+  move:'<path d="M12 2v20M2 12h20m-13-7 3-3 3 3m-6 14 3 3 3-3M5 9l-3 3 3 3m14-6 3 3-3 3"/>',
+  sparkle:'<path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5Z"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1 1m12 12 1 1M5 19l1-1M18 6l1-1"/>',
+};
+export const icon = (name:string, cls='') => `<svg class="icon ${cls}" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]??''}</svg>`;

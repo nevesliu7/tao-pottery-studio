@@ -1,0 +1,24 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TAO · Test media stream</title></head><body><div id="app"></div><script type="module">
+import '/src/main.ts';
+import {isIndexPointing,raisedFingers} from '/src/signature.ts';
+// Development-only harness. It never requests a hardware camera and is not a build entry.
+const input=document.createElement('canvas');input.width=640;input.height=480;
+const ctx=input.getContext('2d');const image=new Image();let pointing=new URLSearchParams(location.search).get('pose')==='point';image.src=pointing?'/tests/fixtures/pointing_up.jpg':'/tests/fixtures/woman_hands.jpg';await image.decode();const start=performance.now();
+let timer=setInterval(()=>{ctx.fillStyle='#eee';ctx.fillRect(0,0,640,480);const t=(performance.now()-start)/1000;const s=Math.min(640/image.width,480/image.height)*(pointing?.68:1);ctx.drawImage(image,(640-image.width*s)/2+(pointing?55*Math.sin(t*.8):0),(480-image.height*s)/2+(pointing?25*Math.sin(t*1.1):0),image.width*s,image.height*s);},40);
+window.__harness={streams:[],fail:false,input,latestHands:[]};const onHands=window.__pottery.camera.onHands;window.__pottery.camera.onHands=hands=>{window.__harness.latestHands=hands;onHands(hands);};
+Object.defineProperty(navigator.mediaDevices,'getUserMedia',{configurable:true,value:async()=>{if(window.__harness.fail)throw new DOMException('Test denied','NotAllowedError');const stream=input.captureStream(24);window.__harness.streams.push(stream);return stream;}});
+Object.defineProperty(navigator.mediaDevices,'enumerateDevices',{configurable:true,value:async()=>[{kind:'videoinput',deviceId:'fixture-a',label:'Test stream A · No hardware camera'},{kind:'videoinput',deviceId:'fixture-b',label:'Test stream B · No hardware camera'}]});
+await window.__pottery.camera.refreshDevices();
+const tag=document.createElement('span');tag.textContent='TEST · Official sample image stream. No hardware camera.';tag.style='position:fixed;top:0;left:40%;font-size:9px;z-index:99;color:#a65b37';document.body.append(tag);
+// Expose reproducible test results in the DOM, without asking for hardware permissions.
+const controls=document.createElement('div');controls.style='font:9px monospace;padding:5px;background:#fff8d9;color:#423';
+controls.innerHTML='<button id="fixture-pose">Switch to open hands</button> · <button id="fixture-photo">Load test background</button> · <button id="fixture-invalid">Test invalid image</button><output id="fixture-report"></output>';
+document.querySelector('.export-options').append(controls);
+document.querySelector('#fixture-pose').onclick=async()=>{pointing=!pointing;image.src=pointing?'/tests/fixtures/pointing_up.jpg':'/tests/fixtures/woman_hands.jpg';await image.decode();document.querySelector('#fixture-pose').textContent=pointing?'Switch to open hands':'Switch to index finger';};
+document.querySelector('#fixture-photo').onclick=async()=>{const blob=await fetch('/tests/fixtures/woman_hands.jpg').then(r=>r.blob());await window.__pottery.composer.loadPhoto(new File([blob],'test-photo.jpg',{type:'image/jpeg'}));};
+document.querySelector('#fixture-invalid').onclick=async()=>{await window.__pottery.composer.loadPhoto(new File(['invalid'],'invalid.jpg',{type:'image/jpeg'}));};
+const anchorClick=HTMLAnchorElement.prototype.click;
+HTMLAnchorElement.prototype.click=function(){if(!this.download.startsWith('TAO-artwork-'))return anchorClick.call(this);window.__harness.lastDownload={name:this.download,url:this.href};const decoded=new Image();decoded.onload=()=>{window.__harness.downloadSize=[decoded.naturalWidth,decoded.naturalHeight];};decoded.src=this.href;};
+const report=setInterval(()=>{const c=window.__pottery.composer;document.querySelector('#fixture-report').textContent=JSON.stringify({hands:window.__harness.latestHands.length,pointing:window.__harness.latestHands.map(h=>isIndexPointing(h.worldPoints??h.points)),fingers:window.__harness.latestHands.map(h=>raisedFingers(h.worldPoints??h.points)),strokes:c.ink.strokes.map(s=>s.length),background:c.background,download:window.__harness.downloadSize,downloadMatches:window.__harness.lastDownload?.url===document.querySelector('#artwork-preview').toDataURL(),tracks:window.__harness.streams.map(s=>s.getTracks().map(t=>t.readyState))});},500);
+window.addEventListener('pagehide',()=>{clearInterval(timer);clearInterval(report);});
+</script></body></html>
